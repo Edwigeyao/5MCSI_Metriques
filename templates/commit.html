@@ -1,1 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Histogramme des Commits par Minute</title>
+<script src="https://www.gstatic.com/charts/loader.js"></script>
+<script>
+// 1. Charger la librairie Google Charts
+google.charts.load('current', {packages:['corechart']});
+google.charts.setOnLoadCallback(fetchAndDrawChart); // Appeler notre fonction principale
 
+// URL de l'API GitHub pour les commits du repository d'origine
+const GITHUB_API_URL = "https://api.github.com/repos/OpenRSI/5MCSI_Metriques/commits";
+
+/**
+ * Fonction pour extraire les minutes d'un timestamp de l'API GitHub.
+ * Le format de date est "AAAA-MM-JJTHH:MM:SSZ".
+ * @param {string} dateString - Le timestamp du commit.
+ * @returns {number} - La minute (0 à 59).
+ */
+function extractMinute(dateString) {
+    // La méthode substring est simple et efficace pour ce format précis.
+    // Les minutes sont aux positions 14 et 15 (MM).
+    return parseInt(dateString.substring(14, 16), 10);
+}
+
+/**
+ * Fonction principale : récupère les données, les traite et dessine le graphique.
+ */
+async function fetchAndDrawChart() {
+    let commitData;
+    try {
+        // 2. Récupérer les données de l'API GitHub
+        const response = await fetch(GITHUB_API_URL);
+        if (!response.ok) {
+            throw new Error(`Erreur HTTP! Statut: ${response.status}`);
+        }
+        commitData = await response.json();
+    } catch (error) {
+        console.error("Erreur lors de la récupération des données de l'API GitHub:", error);
+        document.getElementById('chart_div').innerHTML = 
+            '<p style="color: red; padding: 20px;">Erreur de chargement des données des commits.</p>';
+        return;
+    }
+
+    // 3. Traiter les données pour compter les commits par minute
+    const minuteCounts = new Array(60).fill(0); // Tableau pour les minutes 0 à 59
+    
+    commitData.forEach(commit => {
+        // L'indice des données intéressantes est : [commit][author][date]
+        const dateString = commit.commit.author.date;
+        const minute = extractMinute(dateString);
+        
+        if (minute >= 0 && minute <= 59) {
+            minuteCounts[minute]++;
+        }
+    });
+
+    // 4. Préparer les données pour Google Charts
+    const dataArray = [['Minute', 'Nombre de Commits']];
+    for (let i = 0; i < 60; i++) {
+        dataArray.push([String(i).padStart(2, '0'), minuteCounts[i]]);
+    }
+
+    const data = google.visualization.arrayToDataTable(dataArray);
+
+    // 5. Définir les options du graphique (en adaptant le style)
+    const options = {
+        title: 'Fréquence des Commits par Minute (5MCSI_Metriques)',
+        backgroundColor: '#E8F5E9', // Vert pastel
+        colors: ['#4CAF50'], // Vert
+        legend: { position: 'none' },
+        chartArea: { top: 80, width: '85%', height: '70%' },
+        
+        hAxis: {
+            title: 'Minute (00 à 59)',
+            textStyle: { color: '#1B5E20', bold: true },
+            titleTextStyle: { color: '#004D40', bold: true }
+        },
+        vAxis: {
+            title: 'Nombre de Commits',
+            minValue: 0,
+            textStyle: { color: '#2E7D32', bold: true },
+            titleTextStyle: { color: '#1B5E20', bold: true }
+        },
+        titleTextStyle: {
+            color: '#388E3C',
+            fontSize: 22,
+            bold: true
+        },
+        // Ajout d'une ligne de référence pour les commits à zéro
+        // series: { 0: { color: '#4CAF50' } }
+    };
+
+    // 6. Dessiner le graphique
+    const chart = new google.visualization.ColumnChart(
+        document.getElementById('chart_div')
+    );
+    chart.draw(data, options);
+}
+</script>
+</head>
+<body>
+<div id="chart_div" style="width: 1000px; height: 600px; margin: auto;"></div>
+</body>
+</html>

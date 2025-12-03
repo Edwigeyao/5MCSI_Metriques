@@ -1,1 +1,81 @@
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript">
+google.charts.load('current', {'packages':['corechart']});
+google.charts.setOnLoadCallback(drawChart);
 
+function drawChart() {
+var data = google.visualization.arrayToDataTable([
+['Mois', 'Température'],
+['Janvier', 8],
+['Février', 10],
+['Mars', 15],
+['Avril', 19],
+['Mai', 23],
+['Juin', 27],
+['Juillet', 29],
+['Août', 28],
+['Septembre', 24],
+['Octobre', 18],
+['Novembre', 13],
+['Décembre', 9]
+]);
+
+var options = {
+title: 'Histogramme des températures de Tawarano',
+
+backgroundColor: '#FFE6F2', // rose clair
+
+colors: ['#C300FF'], // barres violettes
+
+legend: { position: 'none' },
+
+chartArea: {
+top: 80,
+width: '80%',
+height: '70%'
+},
+
+hAxis: {
+title: 'Mois',
+textStyle: {
+color: '#D81B60', // rose foncé
+fontSize: 12,
+bold: true
+},
+titleTextStyle: {
+color: '#880E4F', // violet rosé
+fontSize: 14,
+bold: true
+}
+},
+
+vAxis: {
+title: 'Température (°C)',
+textStyle: {
+color: '#8E24AA', // violet
+fontSize: 12,
+bold: true
+},
+titleTextStyle: {
+color: '#6A1B9A', // violet foncé
+fontSize: 14,
+bold: true
+}
+},
+
+titleTextStyle: {
+color: '#AD1457', // rose/violet
+fontSize: 22,
+bold: true
+}
+};
+
+var chart = new google.visualization.ColumnChart(
+document.getElementById('chart_div')
+);
+
+chart.draw(data, options);
+}
+</script>
+
+<div id="chart_div" style="width: 900px; height: 500px;"></div>

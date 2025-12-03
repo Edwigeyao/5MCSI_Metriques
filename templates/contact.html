@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact & Météo | Tech Startup</title>
+    <style>
+        /* ==================================== */
+        /* BASE & TYPOGRAPHY */
+        /* ==================================== */
+        :root {
+            --color-primary: #6a11cb; /* Violet */
+            --color-secondary: #2575fc; /* Bleu */
+            --color-bg-dark: #1e1e2f;
+            --color-card-dark: #2c2c40;
+            --color-text-light: #f0f0f5;
+            --color-input-border: #4a4a6b;
+            --animation-duration: 0.5s;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, var(--color-bg-dark), #151520);
+            color: var(--color-text-light);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding-top: 50px;
+        }
+
+        .container {
+            display: flex;
+            gap: 40px;
+            max-width: 1200px;
+            width: 90%;
+            margin-bottom: 50px;
+        }
+
+        /* ==================================== */
+        /* ANIMATIONS CLÉS */
+        /* ==================================== */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulseBorder {
+            0% { box-shadow: 0 0 0 0 rgba(106, 17, 203, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(106, 17, 203, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(106, 17, 203, 0); }
+        }
+
+        /* Animation Météo - Simule le ciel qui change */
+        @keyframes cloudMove {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
+        }
+
+        /* ==================================== */
+        /* FORMULAIRE DE CONTACT */
+        /* ==================================== */
+        .card {
+            background-color: var(--color-card-dark);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            flex: 2; /* Prend plus de place que la météo */
+            animation: fadeIn var(--animation-duration) ease-out;
+        }
+
+        h2 {
+            font-size: 2em;
+            text-align: center;
+            margin-bottom: 30px;
+            background: -webkit-linear-gradient(45deg, var(--color-primary), var(--color-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--color-text-light);
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid var(--color-input-border);
+            border-radius: 10px;
+            background-color: #383850;
+            color: var(--color-text-light);
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(106, 17, 203, 0.5);
+            outline: none;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 150px;
+        }
+
+        button.submit-btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            color: var(--color-text-light);
+            background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+            transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+        }
+
+        button.submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(37, 117, 252, 0.4);
+        }
+        
+        button.submit-btn:active {
+            transform: translateY(0);
+        }
+
+        /* ==================================== */
+        /* CARTE MÉTÉO AVEC ANIMATION */
+        /* ==================================== */
+        .weather-card {
+            flex: 1; /* Prend moins de place */
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            background-color: var(--color-card-dark);
+            text-align: center;
+            overflow: hidden; /* Important pour l'animation */
+            position: relative;
+            animation: fadeIn var(--animation-duration) ease-out 0.2s; /* Délai pour l'effet */
+        }
+
+        .weather-card h3 {
+            font-size: 1.5em;
+            color: var(--color-secondary);
+            margin-bottom: 20px;
+        }
+
+        /* Fond animé simulant le ciel */
+        .weather-bg-animation {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            opacity: 0.2;
+            /* Dégradé pour simuler les nuages/le ciel */
+            background: linear-gradient(to right, #4a90e2, #50e3c2, #4a90e2);
+            background-size: 200% 100%;
+            animation: cloudMove 20s infinite linear;
+        }
+
+        .weather-content {
+            position: relative;
+            z-index: 1; /* Au-dessus de l'animation */
+        }
+
+        .weather-icon {
+            font-size: 5em;
+            margin-bottom: 10px;
+            /* Animation de pulsation pour l'effet "live" */
+            display: inline-block;
+            animation: pulseBorder 2s infinite ease-in-out;
+            color: var(--color-text-light);
+            text-shadow: 0 0 10px var(--color-primary);
+        }
+
+        .temperature {
+            font-size: 4em;
+            font-weight: bold;
+            margin: 10px 0;
+            color: #50e3c2; /* Vert/Cyan pour la météo */
+        }
+
+        .condition {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            color: var(--color-text-light);
+        }
+
+        /* Message de confirmation */
+        #confirmationMessage {
+            text-align: center;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 10px;
+            background-color: #38cc70; /* Vert pour succès */
+            color: #1e1e2f;
+            font-weight: bold;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s, visibility 0.5s;
+        }
+        #confirmationMessage.show {
+            opacity: 1;
+            visibility: visible;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card contact-form-card">
+            <h2>📨 Contactez notre équipe Tech</h2>
+            <form id="contactForm">
+                <div class="form-group">
+                    <label for="name">Nom / Startup</label>
+                    <input type="text" id="name" name="name" required placeholder="Votre nom ou le nom de votre entreprise">
+                </div>
+                <div class="form-group">
+                    <label for="email">E-mail Professionnel</label>
+                    <input type="email" id="email" name="email" required placeholder="contact@votrestartup.com">
+                </div>
+                <div class="form-group">
+                    <label for="message">Votre Pitch / Message</label>
+                    <textarea id="message" name="message" required placeholder="Expliquez-nous votre besoin ou votre idée de collaboration..."></textarea>
+                </div>
+                <button type="submit" class="submit-btn">Envoyer la Requête</button>
+            </form>
+            <div id="confirmationMessage">🎉 Votre message a été envoyé avec succès !</div>
+        </div>
+
+        <div class="weather-card">
+            <div class="weather-bg-animation"></div>
+            <div class="weather-content">
+                <h3>☀️ Météo du Quartier Général</h3>
+                <div class="weather-icon">☁️</div> <div class="temperature">24°C</div>
+                <div class="condition">Clair avec Nuages Héraclides</div>
+                <p style="margin-top: 25px; font-size: 0.9em; opacity: 0.8;">Données mises à jour toutes les 60 secondes.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('contactForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Empêche l'envoi réel du formulaire
+
+            const form = event.target;
+            const submitBtn = form.querySelector('.submit-btn');
+            const messageDiv = document.getElementById('confirmationMessage');
+
+            // 1. Désactiver le bouton et montrer un état de chargement
+            submitBtn.textContent = 'Envoi en cours...';
+            submitBtn.style.opacity = '0.7';
+            submitBtn.disabled = true;
+
+            // 2. Simuler un délai d'envoi (comme une requête API)
+            setTimeout(() => {
+                // 3. Afficher le message de confirmation
+                messageDiv.classList.add('show');
+                
+                // 4. Réinitialiser le formulaire
+                form.reset();
+
+                // 5. Rétablir le bouton après un court délai
+                setTimeout(() => {
+                    submitBtn.textContent = 'Envoyer la Requête';
+                    submitBtn.style.opacity = '1';
+                    submitBtn.disabled = false;
+                    
+                    // 6. Masquer le message de confirmation après 3 secondes
+                    setTimeout(() => {
+                        messageDiv.classList.remove('show');
+                    }, 3000);
+
+                }, 500); // Rétablir le bouton après 0.5s de confirmation
+
+            }, 1500); // Simule 1.5s d'envoi
+        });
+    </script>
+</body>
+</html>

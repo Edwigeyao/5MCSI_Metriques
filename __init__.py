@@ -39,4 +39,4 @@ def mongraphique():
   
   @app.route("/histograme/")
 def monhistogramme():
-    return render_template("graphique.html")
+    return render_template("histograme.html")

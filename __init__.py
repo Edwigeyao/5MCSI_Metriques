@@ -38,6 +38,10 @@ def histogramme():
 def contact():
     return render_template("contact.html")
 
+@app.route("/commit/")
+def commit():
+    return render_template("commit.html")
+
 
   
 if __name__ == "__main__":
